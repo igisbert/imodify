@@ -1,0 +1,95 @@
+import { env } from 'node:process';
+
+const strings = {
+  en: {
+    cli_desc: 'CLI for batch image optimization and manipulation',
+    arg_pattern: 'File pattern (e.g., "*.jpg" or just "*")',
+    opt_w: 'Width in pixels',
+    opt_h: 'Height in pixels',
+    opt_fit: 'Resize fit strategy (cover, fill, inside, contain)',
+    opt_format: 'Output format (jpg, png, webp, avif)',
+    opt_quality: 'Quality (1-100) or lossless',
+    opt_noexif: 'Remove EXIF metadata',
+    opt_rename: 'Rename pattern (e.g., "Image")',
+    opt_blur: 'Apply blur with radius',
+    opt_sharpen: 'Apply sharpen filter',
+    opt_grayscale: 'Convert to grayscale',
+    opt_brightness: 'Adjust brightness (e.g., 0.5 to darken, 1.5 to brighten)',
+    opt_saturation: 'Adjust saturation (e.g., 0 for grayscale, 2 for vivid)',
+    opt_normalize: 'Normalize image contrast',
+    opt_rotate: 'Rotate image (90, 180, 270)',
+    opt_flip: 'Flip vertically',
+    opt_flop: 'Flop horizontally',
+    opt_smart: 'Smart crop based on attention (requires --w and --h)',
+    
+    msg_no_files_pattern: 'No files found matching the pattern.',
+    msg_no_images_pattern: 'No images found matching the pattern.',
+    msg_found_images: 'Found',
+    msg_images: 'images',
+    msg_validating: 'Validating files...',
+    msg_no_valid: 'No valid images found.',
+    msg_output_dir: 'Output directory:',
+    msg_processing: 'Processing images...',
+    msg_completed: 'Completed in',
+    msg_processed: 'Processed:',
+    msg_saved: 'Saved:',
+    msg_reduction: 'reduction',
+    msg_output: 'Output:',
+    msg_bar_label: 'Processing',
+    msg_err_invalid_format: 'Invalid output format provided:',
+    msg_err_supported_formats: 'Supported formats:',
+    msg_failures: 'Failures:',
+    msg_failure_details: 'files failed to process. Check the list below:',
+    msg_quote_hint: 'Hint: If filenames contain spaces or parentheses, try wrapping them in quotes (e.g., "file(1).jpg").'
+  },
+  es: {
+    cli_desc: 'CLI para optimización y manipulación de imágenes por lotes',
+    arg_pattern: 'Patrón de archivos (ej., "*.jpg" o simplemente "*")',
+    opt_w: 'Ancho en píxeles',
+    opt_h: 'Alto en píxeles',
+    opt_fit: 'Estrategia de ajuste (cover, fill, inside, contain)',
+    opt_format: 'Formato de salida (jpg, png, webp, avif)',
+    opt_quality: 'Calidad (1-100) o lossless',
+    opt_noexif: 'Eliminar metadatos EXIF',
+    opt_rename: 'Patrón de renombrado (ej., "Imagen")',
+    opt_blur: 'Aplicar desenfoque (blur) con radio',
+    opt_sharpen: 'Aplicar filtro de enfoque (sharpen)',
+    opt_grayscale: 'Convertir a escala de grises',
+    opt_brightness: 'Ajustar brillo (ej., 0.5 para oscurecer, 1.5 para aclarar)',
+    opt_saturation: 'Ajustar saturación (ej., 0 para grises, 2 para vívido)',
+    opt_normalize: 'Normalizar contraste de imagen',
+    opt_rotate: 'Rotar imagen (90, 180, 270)',
+    opt_flip: 'Voltear verticalmente (flip)',
+    opt_flop: 'Voltear horizontalmente (flop)',
+    opt_smart: 'Recorte inteligente basado en atención (requiere --w y --h)',
+    
+    msg_no_files_pattern: 'No se encontraron archivos con ese patrón.',
+    msg_no_images_pattern: 'No se encontraron imágenes con ese patrón.',
+    msg_found_images: 'Encontradas',
+    msg_images: 'imágenes',
+    msg_validating: 'Validando archivos...',
+    msg_no_valid: 'No se encontraron imágenes válidas.',
+    msg_output_dir: 'Directorio de salida:',
+    msg_processing: 'Procesando imágenes...',
+    msg_completed: 'Completado en',
+    msg_processed: 'Procesadas:',
+    msg_saved: 'Ahorrado:',
+    msg_reduction: 'reducción',
+    msg_output: 'Salida:',
+    msg_error_prefix: 'Error: ',
+    msg_help_hint: 'usa --help para más información',
+    msg_bar_label: 'Procesando',
+    msg_err_invalid_format: 'Formato de salida inválido:',
+    msg_err_supported_formats: 'Formatos soportados:',
+    msg_failures: 'Fallos:',
+    msg_failure_details: 'archivos fallaron al procesarse. Revisa la lista:',
+    msg_quote_hint: 'Sugerencia: Si los nombres tienen espacios o paréntesis, usa comillas (ej., "foto(1).jpg").'
+  }
+};
+
+// Detect simple locale
+const locale = Intl.DateTimeFormat().resolvedOptions().locale.startsWith('es') ? 'es' : 'en';
+
+export function t(key) {
+  return strings[locale][key] || strings['en'][key] || key;
+}
