@@ -1,4 +1,5 @@
 import sharp from "sharp";
+import { removeBackground } from "./ai.js";
 
 /**
  * Processes a single image based on the provided options.
@@ -8,7 +9,13 @@ import sharp from "sharp";
  * @returns {Promise<Object>} - Stats about the processed image.
  */
 export async function processImage(inputPath, outputPath, options) {
-  let instance = sharp(inputPath);
+  let instance;
+  if (options.removebg) {
+    const aiBuffer = await removeBackground(inputPath);
+    instance = sharp(aiBuffer);
+  } else {
+    instance = sharp(inputPath);
+}
 
   // 0. Auto-orient based on EXIF (standard behavior for expected viewing)
   instance = instance.rotate();

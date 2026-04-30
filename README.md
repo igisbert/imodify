@@ -50,13 +50,19 @@ imodify "*.png" --w 150 --h 150 --smart --noexif
 imodify "foto.jpg" --grayscale --brightness 1.2
 ```
 
+**Eliminar fondo con IA (manteniendo transparencia):**
+```bash
+imodify "avatar.jpg" --removebg --format png
+```
+*Si eliges un formato sin canal alfa (como JPG), el fondo eliminado se mostrará como un color sólido.*
+
 ## Opciones Disponibles
 
 | Opción | Alias | Descripción | Ejemplo |
 |--------|-------|-------------|---------|
 | `--w` | | Ancho en píxeles | `--w 800` |
 | `--h` | | Alto en píxeles | `--h 600` |
-| `--fit` | | Estrategia de ajuste (`cover`, `fill`, `inside`, `contain`) | `--fit inside` |
+| `--fit` | | Estrategia de ajuste: `cover` (llena y recorta), `fill` (estira/deforma), `inside` (proporcional) o `contain` (añade barras). | `--fit cover` |
 | `--smart` | | Recorte inteligente basado en atención (requiere ancho y alto) | `--smart` |
 | `--format` | `-f` | Formato de salida (`jpg`, `png`, `webp`, `avif`) | `-f webp` |
 | `--quality` | `-q` | Calidad (1-100) | `-q 80` |
@@ -71,6 +77,7 @@ imodify "foto.jpg" --grayscale --brightness 1.2
 | `--rotate` | | Rotar imagen (90, 180, 270) | `--rotate 90` |
 | `--flip` | | Voltear verticalmente | `--flip` |
 | `--flop` | | Voltear horizontalmente | `--flop` |
+| `--removebg` | `-b` | Elimina el fondo de la imagen usando IA. **Nota:** Requiere formatos como PNG o WebP para mantener la transparencia. | `--removebg` |
 
 ## Licencia
 
@@ -130,13 +137,19 @@ imodify "*.png" --w 150 --h 150 --smart --noexif
 imodify "photo.jpg" --grayscale --brightness 1.2
 ```
 
+**Remove background with AI (keeping transparency):**
+```bash
+imodify "avatar.jpg" --removebg --format png
+```
+*If you choose a format without an alpha channel (like JPG), the removed background will appear as a solid color.*
+
 ## Available Options
 
 | Option | Alias | Description | Example |
 |--------|-------|-------------|---------|
 | `--w` | | Width in pixels | `--w 800` |
 | `--h` | | Height in pixels | `--h 600` |
-| `--fit` | | Resize fit strategy (`cover`, `fill`, `inside`, `contain`) | `--fit inside` |
+| `--fit` | | Resize strategy: `cover` (fill & crop), `fill` (stretch), `inside` (proportional) or `contain` (adds bars). | `--fit cover` |
 | `--smart` | | Smart crop based on attention (requires width and height) | `--smart` |
 | `--format` | `-f` | Output format (`jpg`, `png`, `webp`, `avif`) | `-f webp` |
 | `--quality` | `-q` | Quality (1-100) | `-q 80` |
@@ -151,6 +164,7 @@ imodify "photo.jpg" --grayscale --brightness 1.2
 | `--rotate` | | Rotate image (90, 180, 270) | `--rotate 90` |
 | `--flip` | | Flip vertically | `--flip` |
 | `--flop` | | Flop horizontally | `--flop` |
+| `--removebg` | `-b` | Remove image background using AI. **Note:** Requires formats like PNG or WebP to maintain transparency. | `--removebg` |
 
 ## License
 

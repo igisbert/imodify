@@ -6,6 +6,7 @@ import ora from "ora";
 import SingleBar from "cli-progress";
 import { processImage } from "./processor.js";
 import { t } from "./i18n.js";
+import { initAI } from "./ai.js";
 
 const IMAGE_EXTENSIONS = [
   ".jpg",
@@ -110,6 +111,21 @@ export async function optimize(options) {
     symbol: chalk.green("✓"),
     text: " " + t("msg_validating"),
   });
+
+  // Initialize AI if needed
+  if (options.removebg) {
+    const aiSpinner = ora(" " + t("msg_initializing_ai")).start();
+    try {
+      await initAI();
+      aiSpinner.stopAndPersist({
+        symbol: chalk.green("✓"),
+        text: " " + t("msg_initializing_ai_success"),
+      });
+    } catch (error) {
+      aiSpinner.fail(chalk.red(" " + t("msg_initializing_ai_fail")));
+      throw error;
+    }
+  }
 
   // 3. Setup output directory
   const outputDir = path.join(process.cwd(), "imodify");

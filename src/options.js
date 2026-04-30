@@ -33,6 +33,10 @@ export function getOptions() {
     .option("--rotate <degrees>", t("opt_rotate"), parseInt)
     .option("--flip", t("opt_flip"))
     .option("--flop", t("opt_flop"))
+
+    // AI
+    .option("-b, --removebg", t("opt_removebg"))
+    
     .configureOutput({
       writeErr: (str) =>
         process.stderr.write(

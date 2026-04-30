@@ -6,7 +6,7 @@ const strings = {
     arg_pattern: 'File pattern (e.g., "*.jpg" or just "*")',
     opt_w: 'Width in pixels',
     opt_h: 'Height in pixels',
-    opt_fit: 'Resize fit strategy (cover, fill, inside, contain)',
+    opt_fit: 'Strategy: cover (crop), fill (stretch), inside (proportional), contain (bars)',
     opt_format: 'Output format (jpg, png, webp, avif)',
     opt_quality: 'Quality (1-100) or lossless',
     opt_noexif: 'Remove EXIF metadata',
@@ -20,7 +20,8 @@ const strings = {
     opt_rotate: 'Rotate image (90, 180, 270)',
     opt_flip: 'Flip vertically',
     opt_flop: 'Flop horizontally',
-    opt_smart: 'Smart crop based on attention (requires --w and --h)',
+    opt_smart: 'Smart crop based on attention (requires --w and --h). Overrides --fit.',
+    opt_removebg: 'Remove background using AI. Use transparency-supported formats (PNG/WebP) to avoid solid backgrounds.',
     
     msg_no_files_pattern: 'No files found matching the pattern.',
     msg_no_images_pattern: 'No images found matching the pattern.',
@@ -40,14 +41,18 @@ const strings = {
     msg_err_supported_formats: 'Supported formats:',
     msg_failures: 'Failures:',
     msg_failure_details: 'files failed to process. Check the list below:',
-    msg_quote_hint: 'Hint: If filenames contain spaces or parentheses, try wrapping them in quotes (e.g., "file(1).jpg").'
+    msg_quote_hint: 'Hint: If filenames contain spaces or parentheses, try wrapping them in quotes (e.g., "file(1).jpg").',
+    msg_initializing_ai: 'Initializing AI...',
+    msg_initializing_ai_success: 'AI initialized successfully',
+    msg_initializing_ai_fail: 'Failed to initialize AI',
+    msg_ai_not_initialized: 'AI not initialized'
   },
   es: {
     cli_desc: 'CLI para optimización y manipulación de imágenes por lotes',
     arg_pattern: 'Patrón de archivos (ej., "*.jpg" o simplemente "*")',
     opt_w: 'Ancho en píxeles',
     opt_h: 'Alto en píxeles',
-    opt_fit: 'Estrategia de ajuste (cover, fill, inside, contain)',
+    opt_fit: 'Estrategia: cover (recorta), fill (estira), inside (proporcional), contain (barras)',
     opt_format: 'Formato de salida (jpg, png, webp, avif)',
     opt_quality: 'Calidad (1-100) o lossless',
     opt_noexif: 'Eliminar metadatos EXIF',
@@ -62,6 +67,7 @@ const strings = {
     opt_flip: 'Voltear verticalmente (flip)',
     opt_flop: 'Voltear horizontalmente (flop)',
     opt_smart: 'Recorte inteligente basado en atención (requiere --w y --h)',
+    opt_removebg: 'Elimina el fondo usando IA. Usa formatos que soporten transparencia (PNG/WebP) para evitar fondos sólidos.',
     
     msg_no_files_pattern: 'No se encontraron archivos con ese patrón.',
     msg_no_images_pattern: 'No se encontraron imágenes con ese patrón.',
@@ -83,7 +89,11 @@ const strings = {
     msg_err_supported_formats: 'Formatos soportados:',
     msg_failures: 'Fallos:',
     msg_failure_details: 'archivos fallaron al procesarse. Revisa la lista:',
-    msg_quote_hint: 'Sugerencia: Si los nombres tienen espacios o paréntesis, usa comillas (ej., "foto(1).jpg").'
+    msg_quote_hint: 'Sugerencia: Si los nombres tienen espacios o paréntesis, usa comillas (ej., "foto(1).jpg").',
+    msg_initializing_ai: 'Inicializando IA...',
+    msg_initializing_ai_success: 'IA inicializada con éxito',
+    msg_initializing_ai_fail: 'No se pudo inicializar la IA',
+    msg_ai_not_initialized: 'IA no inicializada'
   }
 };
 
