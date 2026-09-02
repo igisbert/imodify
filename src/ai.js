@@ -4,42 +4,44 @@ import sharp from "sharp";
 const model = "onnx-community/BEN2-ONNX";
 
 const aiPipeline = {
-    segmentation: null 
-}
+  segmentation: null,
+};
 
 export async function initAI() {
-    if(!aiPipeline.segmentation) {
-       try {
-           aiPipeline.segmentation = await pipeline('background-removal', model, {
-           device: "webgpu"
-       });
-       } catch (error) {
-           aiPipeline.segmentation = await pipeline('background-removal', model, {
-           device: "cpu"
-       });
-       }
+  if (!aiPipeline.segmentation) {
+    try {
+      aiPipeline.segmentation = await pipeline("background-removal", model, {
+        device: "webgpu",
+      });
+    } catch (error) {
+      aiPipeline.segmentation = await pipeline("background-removal", model, {
+        device: "cpu",
+      });
     }
+  }
 }
 
 export async function removeBackground(image) {
-    if(!aiPipeline.segmentation) {
-        throw new Error(t('msg_ai_not_initialized'));
-    }
-    
-    const result = await aiPipeline.segmentation(image);
+  if (!aiPipeline.segmentation) {
+    throw new Error(t("msg_ai_not_initialized"));
+  }
 
-    const buffer = await sharp(Buffer.from(result.data), {
-        raw: {
-            width: result.width,
-            height: result.height,
-            channels: 4 
-        }
-    }).png().toBuffer();
+  const result = await aiPipeline.segmentation(image);
 
-    return buffer;
+  const buffer = await sharp(Buffer.from(result.data), {
+    raw: {
+      width: result.width,
+      height: result.height,
+      channels: 4,
+    },
+  })
+    .png()
+    .toBuffer();
+
+  return buffer;
 }
 
- /*  import { AutoModel, AutoProcessor, RawImage, env } from "@huggingface/transformers";
+/*  import { AutoModel, AutoProcessor, RawImage, env } from "@huggingface/transformers";
 import sharp from "sharp";
 import fs from "fs";
 
