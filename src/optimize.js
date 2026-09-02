@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import chalk from "chalk";
 import ora from "ora";
-import SingleBar from "cli-progress";
+import cliProgress from "cli-progress";
 import { processImage } from "./processor.js";
 import { t } from "./i18n.js";
 import { initAI } from "./ai.js";
@@ -136,7 +136,7 @@ export async function optimize(options) {
 
   // 4. Progress bar setup
   console.log(t("msg_processing"));
-  const progressBar = new SingleBar.SingleBar({
+  const progressBar = new cliProgress.SingleBar({
     format:
       t("msg_bar_label") +
       " [" +

@@ -18,11 +18,19 @@ export async function processImage(inputPath, outputPath, options) {
 }
 
   // 0. Auto-orient based on EXIF (standard behavior for expected viewing)
-  instance = instance.rotate();
+  // If manual rotate is requested, it replaces auto-orient (Sharp's second rotate overwrites)
+  if (options.rotate) {
+    instance = instance.rotate(options.rotate);
+  } else {
+    instance = instance.rotate();
+  }
 
   // 1. Metadata handling
-  if (options.noexif) {
-    instance = instance.withMetadata({ exif: false });
+  // --clearexif: remove EXIF (GPS, camera data) but keep ICC/color profile
+  // Sharp strips all metadata by default. To keep colors, explicitly keep ICC.
+  // withMetadata({ exif: false }) is invalid in sharp >=0.33 (expects Object)
+  if (options.clearexif) {
+    instance = instance.keepIccProfile();
   }
 
   // 2. Resize
@@ -85,10 +93,6 @@ export async function processImage(inputPath, outputPath, options) {
   }
 
   // 4. Transformations
-  if (options.rotate) {
-    instance = instance.rotate(options.rotate);
-  }
-
   if (options.flip) {
     instance = instance.flip();
   }

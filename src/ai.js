@@ -1,5 +1,6 @@
 import { pipeline } from "@huggingface/transformers";
 import sharp from "sharp";
+import { t } from "./i18n.js";
 
 const model = "onnx-community/BEN2-ONNX";
 

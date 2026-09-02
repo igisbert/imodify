@@ -42,7 +42,7 @@ imodify "*" --w 800
 
 **Crear miniaturas de 150x150 (recorte inteligente) y eliminar metadatos:**
 ```bash
-imodify "*.png" --w 150 --h 150 --smart --noexif
+imodify "*.png" --w 150 --h 150 --smart --clearexif
 ```
 
 **Convertir a escala de grises y aumentar el brillo:**
@@ -66,7 +66,7 @@ imodify "avatar.jpg" --removebg --format png
 | `--smart` | | Recorte inteligente basado en atención (requiere ancho y alto) | `--smart` |
 | `--format` | `-f` | Formato de salida (`jpg`, `png`, `webp`, `avif`) | `-f webp` |
 | `--quality` | `-q` | Calidad (1-100) | `-q 80` |
-| `--noexif` | | Eliminar metadatos EXIF | `--noexif` |
+| `--clearexif` | | Eliminar metadatos EXIF | `--clearexif` |
 | `--rename` | | Patrón de renombrado para los archivos de salida | `--rename "foto"` |
 | `--blur` | | Aplicar desenfoque con radio específico | `--blur 5` |
 | `--sharpen` | | Aplicar filtro de enfoque | `--sharpen` |
@@ -129,7 +129,7 @@ imodify "*" --w 800
 
 **Create 150x150 thumbnails (smart crop) and remove metadata:**
 ```bash
-imodify "*.png" --w 150 --h 150 --smart --noexif
+imodify "*.png" --w 150 --h 150 --smart --clearexif
 ```
 
 **Convert to grayscale and increase brightness:**
@@ -153,7 +153,7 @@ imodify "avatar.jpg" --removebg --format png
 | `--smart` | | Smart crop based on attention (requires width and height) | `--smart` |
 | `--format` | `-f` | Output format (`jpg`, `png`, `webp`, `avif`) | `-f webp` |
 | `--quality` | `-q` | Quality (1-100) | `-q 80` |
-| `--noexif` | | Remove EXIF metadata | `--noexif` |
+| `--clearexif` | | Remove EXIF metadata | `--clearexif` |
 | `--rename` | | Rename pattern for output files | `--rename "photo"` |
 | `--blur` | | Apply blur with specific radius | `--blur 5` |
 | `--sharpen` | | Apply sharpen filter | `--sharpen` |

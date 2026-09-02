@@ -1,12 +1,15 @@
 import { program } from "commander";
 import chalk from "chalk";
 import { t } from "./i18n.js";
+import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
+const pkg = require("../package.json");
 
 export function getOptions() {
   program
     .name("imodify")
     .description(t("cli_desc"))
-    .version("1.0.0")
+    .version(pkg.version)
     .argument("[pattern]", t("arg_pattern"), "*")
 
     // Resize options
@@ -18,7 +21,7 @@ export function getOptions() {
     // Output options
     .option("-f, --format <type>", t("opt_format"))
     .option("-q, --quality <value>", t("opt_quality"))
-    .option("--noexif", t("opt_noexif"))
+    .option("--clearexif", t("opt_clearexif"))
     .option("--rename <pattern>", t("opt_rename"))
 
     // Filters & Effects
