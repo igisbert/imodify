@@ -29,7 +29,7 @@ Puedes usar **O** una lista de ficheros **O** un patrón, no mezclados, siempre 
 ```bash
 imodify img1.png img2.png --format webp   # lista
 imodify "*.png" --format webp             # patrón (con comillas en PowerShell)
-imodify "*" --w 800                       # todas las imágenes
+imodify "*" -w 800                        # todas las imágenes (-w --width --ancho)
 imodify "foto (1).jpg" "foto 2.png"       # con espacios/paréntesis, usa comillas
 ```
 
@@ -49,12 +49,12 @@ imodify img1.png img2.png --format webp
 
 **Redimensionar imágenes a 800px de ancho manteniendo la proporción:**
 ```bash
-imodify "*" --w 800
+imodify "*" --width 800
 ```
 
 **Crear miniaturas de 150x150 (recorte inteligente) y eliminar metadatos:**
 ```bash
-imodify "*.png" --w 150 --h 150 --smart --clearexif
+imodify "*.png" --width 150 --height 150 --smart --clearexif
 ```
 
 **Convertir a escala de grises y aumentar el brillo:**
@@ -72,10 +72,10 @@ imodify "avatar.jpg" --removebg --format png
 
 | Opción | Alias | Descripción | Ejemplo |
 |--------|-------|-------------|---------|
-| `--w` | | Ancho en píxeles | `--w 800` |
-| `--h` | | Alto en píxeles | `--h 600` |
-| `--fit` | | Estrategia de ajuste: `cover` (llena y recorta), `fill` (estira/deforma), `inside` (proporcional) o `contain` (añade barras). | `--fit cover` |
-| `--smart` | | Recorte inteligente basado en atención (requiere ancho y alto) | `--smart` |
+| `-w, --width, --ancho` | | Ancho en píxeles (entero >0). Solo ancho => inside (proporcional); con --height y sin --fit => fill (estira) | `-w 800` |
+| `-h, --height, --alto` | | Alto en píxeles (entero >0) | `-h 600` |
+| `--fit` | | Estrategia (requiere ancho/alto): cover=rellena y recorta, contain=con barras, inside=proporcional sin deformar, fill=estira exacta. Por defecto: inside si un lado, fill si ambos. Prioridad: --smart > --fit | `--fit cover` |
+| `--smart` | | Recorte inteligente con atención (requiere -w/--width/--ancho y -h/--height/--alto). Fuerza cover+atención, anula --fit. Se ignora si falta ancho o alto | `--smart` |
 | `--format` | `-f` | Formato de salida (`jpg`, `png`, `webp`, `avif`) | `-f webp` |
 | `--quality` | `-q` | Calidad (1-100) | `-q 80` |
 | `--clearexif` | | Eliminar metadatos EXIF | `--clearexif` |
@@ -128,7 +128,7 @@ Use **either** a file list **OR** a pattern, not mixed, always in current direct
 ```bash
 imodify img1.png img2.png --format webp   # list
 imodify "*.png" --format webp             # pattern (with quotes in PowerShell)
-imodify "*" --w 800                       # all images
+imodify "*" -w 800                        # all images (-w --width --ancho)
 imodify "photo (1).jpg" "photo 2.png"     # with spaces/parens, use quotes
 ```
 
@@ -148,12 +148,12 @@ imodify img1.png img2.png --format webp
 
 **Resize images to 800px width maintaining aspect ratio:**
 ```bash
-imodify "*" --w 800
+imodify "*" --width 800
 ```
 
 **Create 150x150 thumbnails (smart crop) and remove metadata:**
 ```bash
-imodify "*.png" --w 150 --h 150 --smart --clearexif
+imodify "*.png" --width 150 --height 150 --smart --clearexif
 ```
 
 **Convert to grayscale and increase brightness:**
@@ -171,10 +171,10 @@ imodify "avatar.jpg" --removebg --format png
 
 | Option | Alias | Description | Example |
 |--------|-------|-------------|---------|
-| `--w` | | Width in pixels | `--w 800` |
-| `--h` | | Height in pixels | `--h 600` |
-| `--fit` | | Resize strategy: `cover` (fill & crop), `fill` (stretch), `inside` (proportional) or `contain` (adds bars). | `--fit cover` |
-| `--smart` | | Smart crop based on attention (requires width and height) | `--smart` |
+| `-w, --width, --ancho` | | Width in pixels (integer >0). Alone => inside (proportional); with --height and no --fit => fill (stretch) | `-w 800` |
+| `-h, --height, --alto` | | Height in pixels (integer >0) | `-h 600` |
+| `--fit` | | Resize strategy (requires width/height): cover=fill & crop, contain=fit + bars, inside=proportional no stretch, fill=stretch exact. Defaults: inside if one side, fill if both. Priority: --smart > --fit | `--fit cover` |
+| `--smart` | | Smart crop attention (requires -w/--width/--ancho and -h/--height/--alto). Forces cover+attention, overrides --fit. Ignored if width or height missing | `--smart` |
 | `--format` | `-f` | Output format (`jpg`, `png`, `webp`, `avif`) | `-f webp` |
 | `--quality` | `-q` | Quality (1-100) | `-q 80` |
 | `--clearexif` | | Remove EXIF metadata | `--clearexif` |

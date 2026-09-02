@@ -10,20 +10,37 @@ export function getOptions() {
     .name("imodify")
     .description(t("cli_desc"))
     .version(pkg.version)
+    .helpOption("-H, --help", "Display help")
     .argument("[patterns...]", t("arg_pattern"))
 
-    // Resize options
-    .option("--w <number>", t("opt_w"), (v) => {
+    // Resize options (primaria --width/--height, aliases visibles --ancho/--alto)
+    .option("-w, --width <number>", t("opt_width"), (v) => {
       const n = parseInt(v, 10);
-      if (isNaN(n) || n <= 0) throw new Error(`Invalid --w value: ${v} (must be >0)`);
+      if (isNaN(n) || n <= 0) throw new Error(`Invalid --width value: ${v} (must be >0)`);
       return n;
     })
-    .option("--h <number>", t("opt_h"), (v) => {
+    .option("--ancho <number>", t("opt_width"), (v) => {
       const n = parseInt(v, 10);
-      if (isNaN(n) || n <= 0) throw new Error(`Invalid --h value: ${v} (must be >0)`);
+      if (isNaN(n) || n <= 0) throw new Error(`Invalid --ancho value: ${v} (must be >0)`);
       return n;
     })
-    .option("--fit <strategy>", t("opt_fit"))
+    .option("-h, --height <number>", t("opt_height"), (v) => {
+      const n = parseInt(v, 10);
+      if (isNaN(n) || n <= 0) throw new Error(`Invalid --height value: ${v} (must be >0)`);
+      return n;
+    })
+    .option("--alto <number>", t("opt_height"), (v) => {
+      const n = parseInt(v, 10);
+      if (isNaN(n) || n <= 0) throw new Error(`Invalid --alto value: ${v} (must be >0)`);
+      return n;
+    })
+    .option("--fit <strategy>", t("opt_fit"), (v) => {
+      const lower = v.toLowerCase();
+      if (!["cover", "fill", "inside", "contain"].includes(lower)) {
+        throw new Error(`Invalid --fit value: ${v} (allowed: cover, fill, inside, contain)`);
+      }
+      return lower;
+    })
     .option("--smart", t("opt_smart"))
 
     // Output options
@@ -62,7 +79,16 @@ export function getOptions() {
 
   program.parse();
 
-  const options = program.opts();
+  const rawOpts = program.opts();
+  // Normalizar width/height primaria (width/height) + alias ancho/alto -> w/h legacy eliminado
+  const width = rawOpts.width ?? rawOpts.ancho;
+  const height = rawOpts.height ?? rawOpts.alto;
+  const options = { ...rawOpts };
+  if (width !== undefined) options.width = width;
+  if (height !== undefined) options.height = height;
+  // compat: alias w/h por si processor antiguo lee w/h (ya migrado a width/height)
+  if (width !== undefined) options.w = width;
+  if (height !== undefined) options.h = height;
 
   // Sanitizar --rename: "mi foto" -> "mi_foto", bloquear traversal
   if (options.rename) {

@@ -4,9 +4,9 @@ const strings = {
   en: {
     cli_desc: 'CLI for batch image optimization and manipulation',
     arg_pattern: 'Files or pattern (e.g., "*.jpg" or img1.png img2.png) - list OR pattern, cwd only',
-    opt_w: 'Width in pixels',
-    opt_h: 'Height in pixels',
-    opt_fit: 'Strategy: cover (crop), fill (stretch), inside (proportional), contain (bars)',
+    opt_width: 'Width in pixels (integer >0, e.g., -w 800). Alone => inside (proportional); with --height and no --fit => fill (stretch)',
+    opt_height: 'Height in pixels (integer >0, e.g., -h 600)',
+    opt_fit: 'Resize strategy (requires width/height). cover=fill & crop, contain=fit + bars, inside=proportional no stretch, fill=stretch exact. Defaults: inside if one side, fill if both. Priority: --smart > --fit',
     opt_format: 'Output format (jpg, png, webp, avif)',
     opt_quality: 'Quality (1-100) or lossless',
     opt_clearexif: 'Remove EXIF metadata',
@@ -20,7 +20,7 @@ const strings = {
     opt_rotate: 'Rotate image (90, 180, 270)',
     opt_flip: 'Flip vertically',
     opt_flop: 'Flop horizontally',
-    opt_smart: 'Smart crop based on attention (requires --w and --h). Overrides --fit.',
+    opt_smart: 'Smart crop attention (requires -w/--width/--ancho and -h/--height/--alto). Forces cover+attention, overrides --fit. Ignored if width or height missing',
     opt_removebg: 'Remove background using AI. Use transparency-supported formats (PNG/WebP) to avoid solid backgrounds.',
     
     msg_no_files_pattern: 'No files found matching the pattern.',
@@ -56,9 +56,9 @@ const strings = {
   es: {
     cli_desc: 'CLI para optimización y manipulación de imágenes por lotes',
     arg_pattern: 'Ficheros o patrón (ej., "*.jpg" o img1.png img2.png) - lista O patrón, solo dir actual',
-    opt_w: 'Ancho en píxeles',
-    opt_h: 'Alto en píxeles',
-    opt_fit: 'Estrategia: cover (recorta), fill (estira), inside (proporcional), contain (barras)',
+    opt_width: 'Ancho en píxeles (entero >0, ej., -w 800). Solo ancho => inside (proporcional); con --height y sin --fit => fill (estira)',
+    opt_height: 'Alto en píxeles (entero >0, ej., -h 600)',
+    opt_fit: 'Estrategia de encuadre (requiere --width/--ancho o --height/--alto). cover=rellena y recorta, contain=con barras, inside=proporcional sin deformar, fill=estira exacta. Por defecto: inside si un lado, fill si ambos. Prioridad: --smart > --fit',
     opt_format: 'Formato de salida (jpg, png, webp, avif)',
     opt_quality: 'Calidad (1-100) o lossless',
     opt_clearexif: 'Eliminar metadatos EXIF',
@@ -72,7 +72,7 @@ const strings = {
     opt_rotate: 'Rotar imagen (90, 180, 270)',
     opt_flip: 'Voltear verticalmente (flip)',
     opt_flop: 'Voltear horizontalmente (flop)',
-    opt_smart: 'Recorte inteligente basado en atención (requiere --w y --h)',
+    opt_smart: 'Recorte inteligente con atención (requiere -w/--width/--ancho y -h/--height/--alto). Fuerza cover+atención, anula --fit. Se ignora si falta ancho o alto',
     opt_removebg: 'Elimina el fondo usando IA. Usa formatos que soporten transparencia (PNG/WebP) para evitar fondos sólidos.',
     
     msg_no_files_pattern: 'No se encontraron archivos con ese patrón.',

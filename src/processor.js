@@ -35,10 +35,12 @@ export async function processImage(inputPath, outputPath, options) {
     instance = instance.keepIccProfile();
   }
 
-  // 2. Resize
-  if (options.w !== undefined || options.h !== undefined) {
-    const width = options.w !== undefined ? options.w : null;
-    const height = options.h !== undefined ? options.h : null;
+  // 2. Resize (width/height primaria, w/h legacy, ancho/alto alias)
+  const rawW = options.width ?? options.w ?? options.ancho;
+  const rawH = options.height ?? options.h ?? options.alto;
+  if (rawW !== undefined || rawH !== undefined) {
+    const width = rawW !== undefined ? rawW : null;
+    const height = rawH !== undefined ? rawH : null;
 
     // Default logic:
     // - If smart is true, force 'cover' with attention strategy.
