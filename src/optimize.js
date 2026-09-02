@@ -173,6 +173,14 @@ export async function optimize(options) {
     ` ${chalk.white(t("msg_output_dir"))} ${chalk.dim("./imodify/")}\n`
   );
 
+  // Pre-cargar nombres existentes en outputDir para no pisar re-ejecuciones
+  const usedNames = new Set();
+  try {
+    const existing = await fs.readdir(outputDir);
+    for (const f of existing) usedNames.add(f);
+  } catch {}
+
+
   // 4. Progress bar setup
   console.log(t("msg_processing"));
   const progressBar = new cliProgress.SingleBar({
@@ -201,7 +209,7 @@ export async function optimize(options) {
   for (let i = 0; i < validFiles.length; i++) {
     const fileObj = validFiles[i];
 
-    // Determine output name (pad para no pisar con lista)
+    // Determine output name (sin pad por defecto, solo _X en colisión, vital para workflow web)
     let outputName = path.basename(fileObj.path);
     if (options.rename) {
       const ext = options.format
@@ -213,6 +221,21 @@ export async function optimize(options) {
       const baseName = path.basename(fileObj.path, path.extname(fileObj.path));
       outputName = `${baseName}.${options.format}`;
     }
+
+    // Anti-colisión: test1.png + test1.jpg -> webp => test1.webp + test1_1.webp (_X, no (X))
+    // + re-ejecución: si imodify/test1.webp ya existe, también sufijo
+    let finalName = outputName;
+    if (usedNames.has(finalName)) {
+      const ext = path.extname(finalName);
+      const base = path.basename(finalName, ext);
+      let counter = 1;
+      while (usedNames.has(finalName)) {
+        finalName = `${base}_${counter}${ext}`;
+        counter++;
+      }
+      outputName = finalName;
+    }
+    usedNames.add(outputName);
 
     const outputPath = path.join(outputDir, outputName);
 
