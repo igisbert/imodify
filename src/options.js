@@ -46,6 +46,7 @@ export function getOptions() {
     // Output options
     .option("-f, --format <type>", t("opt_format"))
     .option("-q, --quality <value>", t("opt_quality"))
+    .option("-o, --output <dir>", t("opt_output"))
     .option("--clearexif", t("opt_clearexif"))
     .option("--rename <pattern>", t("opt_rename"))
 
@@ -58,7 +59,13 @@ export function getOptions() {
     .option("--normalize", t("opt_normalize"))
 
     // Transformation
-    .option("--rotate <degrees>", t("opt_rotate"), parseInt)
+    .option("--rotate <degrees>", t("opt_rotate"), (v) => {
+      const n = parseInt(v, 10);
+      if (isNaN(n) || !isFinite(n)) throw new Error(`Invalid --rotate value: ${v} (must be integer)`);
+      // Normalizar 1-359 con módulo, permitir 0-359, -90 -> 270, 100000 -> 280
+      const norm = ((n % 360) + 360) % 360;
+      return norm;
+    })
     .option("--flip", t("opt_flip"))
     .option("--flop", t("opt_flop"))
 
@@ -89,6 +96,35 @@ export function getOptions() {
   // compat: alias w/h por si processor antiguo lee w/h (ya migrado a width/height)
   if (width !== undefined) options.w = width;
   if (height !== undefined) options.h = height;
+
+  // Validar --output: no -> imodify, "." -> cwd, "string" -> carpeta (crear si no existe)
+  // Subcarpetas tipo a/b gratis pero no prioritario, absolutas no (más rápido . + copiar que escribir ruta)
+  if (options.output !== undefined) {
+    const raw = options.output.trim();
+    if (raw === "") {
+      console.error(chalk.red(`\n✗ Invalid --output value: empty`));
+      process.exit(1);
+    }
+    // Normalizar "." / "./" / ".\" -> "."
+    if (raw === "." || raw === "./" || raw === ".\\" || raw === ".\\/" ) {
+      options.output = ".";
+    } else {
+      // Rechazar absolutas
+      if (raw.includes(":") && /^[a-zA-Z]:[\\/]/.test(raw) || raw.startsWith("/") || raw.startsWith("\\") || raw.startsWith("\\\\")) {
+        console.error(chalk.red(`\n✗ Invalid --output: absolute paths not allowed: ${raw}`));
+        console.error(chalk.dim(`Use "." for cwd or a relative folder like "salida" or "a/b"`));
+        process.exit(1);
+      }
+      if (raw.includes("..")) {
+        console.error(chalk.red(`\n✗ Invalid --output: no traversal: ${raw}`));
+        process.exit(1);
+      }
+      // Normalizar quitar ./ inicial y trailing slash, pero permitir a/b con espacios
+      let normalized = raw.replace(/^\.[\\/]/, "").replace(/[\\/]+$/, "");
+      if (normalized === "") normalized = ".";
+      options.output = normalized;
+    }
+  }
 
   // Sanitizar --rename: "mi foto" -> "mi_foto", bloquear traversal
   if (options.rename) {

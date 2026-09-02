@@ -167,11 +167,21 @@ export async function optimize(options) {
   }
 
   // 3. Setup output directory
-  const outputDir = path.join(process.cwd(), "imodify");
+  // a) no -o => ./imodify, b) -o . => cwd, c) -o string => ./string (crea si no existe, a/b gratis)
+  let outputDir;
+  let displayDir;
+  if (options.output === undefined) {
+    outputDir = path.join(process.cwd(), "imodify");
+    displayDir = "./imodify/";
+  } else if (options.output === ".") {
+    outputDir = process.cwd();
+    displayDir = "./";
+  } else {
+    outputDir = path.join(process.cwd(), options.output);
+    displayDir = `./${options.output.replace(/\\/g, "/")}/`;
+  }
   await fs.mkdir(outputDir, { recursive: true });
-  console.log(
-    ` ${chalk.white(t("msg_output_dir"))} ${chalk.dim("./imodify/")}\n`
-  );
+  console.log(` ${chalk.white(t("msg_output_dir"))} ${chalk.dim(displayDir)}\n`);
 
   // Pre-cargar nombres existentes en outputDir para no pisar re-ejecuciones
   const usedNames = new Set();
@@ -276,9 +286,7 @@ export async function optimize(options) {
         stats.originalSize
       )} MB → ${toMB(stats.newSize)} MB (${reduction}% ${t("msg_reduction")})`
     );
-    console.log(
-      `  ${chalk.bold("•")} ${t("msg_output")} ${chalk.dim("./imodify/")}`
-    );
+    console.log(`  ${chalk.bold("•")} ${t("msg_output")} ${chalk.dim(displayDir)}`);
   }
 
   // 7. Report Failures (incluye earlyFailures de fichero no existe)

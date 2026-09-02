@@ -78,6 +78,7 @@ imodify "avatar.jpg" --removebg --format png
 | `--smart` | | Recorte inteligente con atención (requiere -w/--width/--ancho y -h/--height/--alto). Fuerza cover+atención, anula --fit. Se ignora si falta ancho o alto | `--smart` |
 | `--format` | `-f` | Formato de salida (`jpg`, `png`, `webp`, `avif`) | `-f webp` |
 | `--quality` | `-q` | Calidad (1-100) | `-q 80` |
+| `-o, --output` | | Directorio salida (defecto ./imodify, "." para cwd, "a/b" crea subcarpetas, comillas si espacios) | `-o "."` |
 | `--clearexif` | | Eliminar metadatos EXIF | `--clearexif` |
 | `--rename` | | Patrón de renombrado para los archivos de salida | `--rename "foto"` |
 | `--blur` | | Aplicar desenfoque con radio específico | `--blur 5` |
@@ -86,7 +87,7 @@ imodify "avatar.jpg" --removebg --format png
 | `--brightness` | | Ajustar brillo (0.5 oscurecer, 1.5 aclarar) | `--brightness 1.1` |
 | `--saturation` | | Ajustar saturación (0 grises, 2 vívido) | `--saturation 0.5` |
 | `--normalize` | | Normalizar contraste de la imagen | `--normalize` |
-| `--rotate` | | Rotar imagen (90, 180, 270) | `--rotate 90` |
+| `--rotate` | | Rotar imagen (0-359°, ej. 90, 180, 270; normalizado módulo 360, ej. 370->10) | `--rotate 90` |
 | `--flip` | | Voltear verticalmente | `--flip` |
 | `--flop` | | Voltear horizontalmente | `--flop` |
 | `--removebg` | `-b` | Elimina el fondo de la imagen usando IA. **Nota:** Requiere formatos como PNG o WebP para mantener la transparencia. | `--removebg` |
@@ -177,6 +178,7 @@ imodify "avatar.jpg" --removebg --format png
 | `--smart` | | Smart crop attention (requires -w/--width/--ancho and -h/--height/--alto). Forces cover+attention, overrides --fit. Ignored if width or height missing | `--smart` |
 | `--format` | `-f` | Output format (`jpg`, `png`, `webp`, `avif`) | `-f webp` |
 | `--quality` | `-q` | Quality (1-100) | `-q 80` |
+| `-o, --output` | | Output directory (default ./imodify, "." for cwd, "a/b" creates subfolders, quotes if spaces) | `-o "."` |
 | `--clearexif` | | Remove EXIF metadata | `--clearexif` |
 | `--rename` | | Rename pattern for output files | `--rename "photo"` |
 | `--blur` | | Apply blur with specific radius | `--blur 5` |
@@ -185,7 +187,7 @@ imodify "avatar.jpg" --removebg --format png
 | `--brightness` | | Adjust brightness (e.g., 0.5 to darken, 1.5 to brighten) | `--brightness 1.1` |
 | `--saturation` | | Adjust saturation (e.g., 0 for grayscale, 2 for vivid) | `--saturation 0.5` |
 | `--normalize` | | Normalize image contrast | `--normalize` |
-| `--rotate` | | Rotate image (90, 180, 270) | `--rotate 90` |
+| `--rotate` | | Rotate image (0-359°, e.g., 90, 180, 270; normalized modulo 360, e.g., 370->10) | `--rotate 90` |
 | `--flip` | | Flip vertically | `--flip` |
 | `--flop` | | Flop horizontally | `--flop` |
 | `--removebg` | `-b` | Remove image background using AI. **Note:** Requires formats like PNG or WebP to maintain transparency. | `--removebg` |
