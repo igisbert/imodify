@@ -34,39 +34,49 @@ export async function optimize(options) {
     options.format &&
     !SUPPORTED_OUTPUT_FORMATS.includes(options.format.toLowerCase())
   ) {
-    console.error(
-      `\n${chalk.red("✗")} ${t("msg_err_invalid_format")} ${chalk.bold(
-        options.format
-      )}`
-    );
-    console.error(
-      `${t("msg_err_supported_formats")} ${SUPPORTED_OUTPUT_FORMATS.join(
-        ", "
-      )}\n`
-    );
-    process.exit(1);
+    const err = new Error(`${t("msg_err_invalid_format")} ${options.format}. ${t("msg_err_supported_formats")} ${SUPPORTED_OUTPUT_FORMATS.join(", ")}`);
+    err.code = "INVALID_FORMAT";
+    throw err;
   }
 
-  // 1. Find files
+  // 1. Find files (Fase 2: solo cwd, O lista O patrón, sin mixto)
+  // Para mostrar "fichero no existe" fácil, colectamos fallos de no encontrado aquí
+  const earlyFailures = [];
   let files = [];
-  for (const pattern of options.filePatterns) {
-    // 1. Try to treat as literal file first (handles parens and special chars)
-    try {
-      const stats = await fs.stat(pattern);
-      if (stats.isFile()) {
-        files.push(pattern);
-        continue;
-      }
-    } catch (e) {
-      // Not a literal file, fall through to glob
+  for (let pattern of options.filePatterns) {
+    // Safe: permitir .\test.jpg de autocompletado PS -> test.jpg (solo cwd)
+    pattern = pattern.replace(/^\.[\\/]/, "");
+    // Defensa extra por si optimize se llama sin pasar por options.js
+    if (pattern.includes("/") || pattern.includes("\\") || pattern.includes("..")) {
+      earlyFailures.push({ file: pattern, error: "Subdirectories not supported" });
+      continue;
     }
 
-    // 2. If not literal file, treat as pattern
+    const isGlobPattern = pattern.includes("*") || pattern.includes("?");
+
+    if (!isGlobPattern) {
+      // Literal: foto.jpg, foto (1).jpg - manejar espacios/paréntesis (PS)
+      try {
+        const stats = await fs.stat(pattern);
+        if (stats.isFile()) {
+          files.push(pattern);
+        } else {
+          earlyFailures.push({ file: pattern, error: "Not a file" });
+        }
+      } catch (e) {
+        earlyFailures.push({ file: pattern, error: "File not found" });
+      }
+      continue;
+    }
+
+    // Patrón: "*.png", "*", "*.jpg" - solo cwd, sin subdirectorios
     const matches = await glob(pattern, {
       nodir: true,
       windowsPathsNoEscape: true,
     });
-    files = files.concat(matches);
+    // Defensa: filtrar cualquier match con "/" por si glob devuelve subdirs
+    const cwdMatches = matches.filter((m) => !m.includes("/") && !m.includes("\\"));
+    files = files.concat(cwdMatches);
   }
 
   // Remove duplicates just in case patterns overlap (e.g. picopt *.jpg data.jpg)
@@ -78,9 +88,26 @@ export async function optimize(options) {
     return IMAGE_EXTENSIONS.includes(ext);
   });
 
-  if (files.length === 0) {
+  // Filtrar earlyFailures por extensión también (no reportar txt inexistente como fallo de imagen)
+  const filteredEarlyFailures = earlyFailures.filter((f) =>
+    IMAGE_EXTENSIONS.includes(path.extname(f.file).toLowerCase())
+  );
+
+  if (files.length === 0 && filteredEarlyFailures.length === 0) {
     console.log(chalk.yellow(t("msg_no_images_pattern")));
     console.log(chalk.dim(t("msg_quote_hint")));
+    return;
+  }
+
+  // Si solo hay fallos y no hay archivos válidos, mostrar found 0 + fallos sin spinner
+  if (files.length === 0 && filteredEarlyFailures.length > 0) {
+    console.log(`\n ${t("msg_found_images")} ${chalk.bold(0)} ${t("msg_images")}`);
+    console.log(
+      `\n${chalk.red("✗")} ${chalk.bold(t("msg_failures"))} ${filteredEarlyFailures.length} ${t("msg_failure_details")}`
+    );
+    filteredEarlyFailures.forEach((f) => {
+      console.log(`  - ${chalk.yellow(path.basename(f.file))}: ${chalk.dim(f.error)}`);
+    });
     return;
   }
 
@@ -91,20 +118,32 @@ export async function optimize(options) {
   // 2. Validate images (size, accessibility)
   const spinner = ora(" " + t("msg_validating")).start();
   const validFiles = [];
+  const sizeFailures = [];
 
   for (const file of files) {
     try {
       const stats = await fs.stat(file);
       if (stats.size <= MAX_FILE_SIZE) {
         validFiles.push({ path: file, size: stats.size });
+      } else {
+        sizeFailures.push({ file, error: `File too large (>${MAX_FILE_SIZE / (1024 * 1024)}MB)` });
       }
     } catch (e) {
-      /* skip inaccessible files */
+      sizeFailures.push({ file, error: e.message });
     }
   }
 
   if (validFiles.length === 0) {
     spinner.fail(chalk.red(" " + t("msg_no_valid")));
+    const allFailures = [...filteredEarlyFailures, ...sizeFailures];
+    if (allFailures.length > 0) {
+      console.log(
+        `\n${chalk.red("✗")} ${chalk.bold(t("msg_failures"))} ${allFailures.length} ${t("msg_failure_details")}`
+      );
+      allFailures.forEach((f) => {
+        console.log(`  - ${chalk.yellow(path.basename(f.file))}: ${chalk.dim(f.error)}`);
+      });
+    }
     return;
   }
   spinner.stopAndPersist({
@@ -162,13 +201,14 @@ export async function optimize(options) {
   for (let i = 0; i < validFiles.length; i++) {
     const fileObj = validFiles[i];
 
-    // Determine output name
+    // Determine output name (pad para no pisar con lista)
     let outputName = path.basename(fileObj.path);
     if (options.rename) {
       const ext = options.format
         ? `.${options.format}`
         : path.extname(fileObj.path);
-      outputName = `${options.rename}${i + 1}${ext}`;
+      const padLen = Math.max(3, String(validFiles.length).length);
+      outputName = `${options.rename}${String(i + 1).padStart(padLen, "0")}${ext}`;
     } else if (options.format) {
       const baseName = path.basename(fileObj.path, path.extname(fileObj.path));
       outputName = `${baseName}.${options.format}`;
@@ -218,14 +258,13 @@ export async function optimize(options) {
     );
   }
 
-  // 7. Report Failures
-  if (failures.length > 0) {
+  // 7. Report Failures (incluye earlyFailures de fichero no existe)
+  const allFailures = [...filteredEarlyFailures, ...sizeFailures, ...failures];
+  if (allFailures.length > 0) {
     console.log(
-      `\n${chalk.red("✗")} ${chalk.bold(t("msg_failures"))} ${
-        failures.length
-      } ${t("msg_failure_details")}`
+      `\n${chalk.red("✗")} ${chalk.bold(t("msg_failures"))} ${allFailures.length} ${t("msg_failure_details")}`
     );
-    failures.forEach((f) => {
+    allFailures.forEach((f) => {
       console.log(
         `  - ${chalk.yellow(path.basename(f.file))}: ${chalk.dim(f.error)}`
       );

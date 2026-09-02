@@ -6,12 +6,14 @@ import chalk from 'chalk';
 
 try {
   const options = getOptions();
-  
-  // Por ahora, pasamos las opciones al orquestador.
-  // En el siguiente paso implementaremos la lógica real en optimize.js
   await optimize(options);
-  
 } catch (error) {
-  console.error(chalk.red('\n✗ Error:'), error.message);
-  process.exit(1);
+  // Limpia ora/cli-progress si quedaron colgados
+  if (error.code === "INVALID_FORMAT") {
+    console.error(chalk.red(`\n✗ ${error.message}`));
+  } else {
+    console.error(chalk.red('\n✗ Error:'), error.message);
+    if (process.env.DEBUG) console.error(error.stack);
+  }
+  process.exit(error.exitCode || 1);
 }

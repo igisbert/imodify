@@ -10,11 +10,19 @@ export function getOptions() {
     .name("imodify")
     .description(t("cli_desc"))
     .version(pkg.version)
-    .argument("[pattern]", t("arg_pattern"), "*")
+    .argument("[patterns...]", t("arg_pattern"))
 
     // Resize options
-    .option("--w <number>", t("opt_w"))
-    .option("--h <number>", t("opt_h"))
+    .option("--w <number>", t("opt_w"), (v) => {
+      const n = parseInt(v, 10);
+      if (isNaN(n) || n <= 0) throw new Error(`Invalid --w value: ${v} (must be >0)`);
+      return n;
+    })
+    .option("--h <number>", t("opt_h"), (v) => {
+      const n = parseInt(v, 10);
+      if (isNaN(n) || n <= 0) throw new Error(`Invalid --h value: ${v} (must be >0)`);
+      return n;
+    })
     .option("--fit <strategy>", t("opt_fit"))
     .option("--smart", t("opt_smart"))
 
@@ -55,13 +63,48 @@ export function getOptions() {
   program.parse();
 
   const options = program.opts();
-  const args = program.args;
 
-  if (args.length === 0) {
-    program.help();
+  // Sanitizar --rename: "mi foto" -> "mi_foto", bloquear traversal
+  if (options.rename) {
+    if (options.rename.includes("..") || options.rename.includes("/") || options.rename.includes("\\")) {
+      console.error(chalk.red(`\n✗ Invalid --rename value: ${options.rename} (no path traversal)`));
+      process.exit(1);
+    }
+    // Reemplazar caracteres no permitidos en Windows/macOS
+    const sanitized = options.rename.replace(/[^a-zA-Z0-9-_\u00C0-\u024F ]/g, "_").replace(/ /g, "_").slice(0, 64);
+    if (sanitized !== options.rename) {
+      console.log(chalk.dim(`  rename sanitized: "${options.rename}" -> "${sanitized}"`));
+    }
+    options.rename = sanitized || "image";
   }
 
-  const filePatterns = args;
+  let filePatterns = program.args;
+
+  // Normalizar prefijo .\ o ./ de autocompletado PS (safe, solo cwd)
+  const normalizeCwd = (p) => p.replace(/^\.[\\/]/, "");
+  filePatterns = filePatterns.map(normalizeCwd);
+
+  // Default: sin args => todas las imágenes del cwd (equivale a "*")
+  if (filePatterns.length === 0) {
+    filePatterns = ["*"];
+  }
+
+  // Validación Fase 2: O lista O patrón, solo cwd, no mixto, sin subdirectorios/** 
+  // Solo * y ? son globs en Fase 2 (evita que foto[1].jpg literal se confunda)
+  const isGlob = (p) => p.includes("*") || p.includes("?");
+  const hasGlob = filePatterns.some(isGlob);
+  const hasLiteral = filePatterns.some((p) => !isGlob(p));
+  if (hasGlob && hasLiteral) {
+    console.error(chalk.red(`\n✗ ${t("msg_err_mixed_input")}`));
+    console.error(chalk.dim(t("msg_mixed_hint")) + "\n");
+    process.exit(1);
+  }
+  const hasSubdir = filePatterns.some((p) => p.includes("/") || p.includes("\\") || p.includes("**") || p.includes(".."));
+  if (hasSubdir) {
+    console.error(chalk.red(`\n✗ ${t("msg_err_subdir")}`));
+    console.error(chalk.dim(t("msg_subdir_hint")) + "\n");
+    process.exit(1);
+  }
 
   return { ...options, filePatterns };
 }

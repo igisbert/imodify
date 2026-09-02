@@ -29,7 +29,9 @@ export async function removeBackground(image) {
 
   const result = await aiPipeline.segmentation(image);
 
-  const buffer = await sharp(Buffer.from(result.data), {
+  const data = result.data;
+  const rawBuffer = data.buffer ? Buffer.from(data.buffer, data.byteOffset, data.byteLength) : Buffer.from(data);
+  const buffer = await sharp(rawBuffer, {
     raw: {
       width: result.width,
       height: result.height,

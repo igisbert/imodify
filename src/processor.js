@@ -1,4 +1,5 @@
 import sharp from "sharp";
+import path from "node:path";
 import { removeBackground } from "./ai.js";
 
 /**
@@ -19,7 +20,8 @@ export async function processImage(inputPath, outputPath, options) {
 
   // 0. Auto-orient based on EXIF (standard behavior for expected viewing)
   // If manual rotate is requested, it replaces auto-orient (Sharp's second rotate overwrites)
-  if (options.rotate) {
+  // Sin --clearexif no se toca meta (decisión Fase 2.5)
+  if (options.rotate !== undefined && options.rotate !== null) {
     instance = instance.rotate(options.rotate);
   } else {
     instance = instance.rotate();
@@ -34,9 +36,9 @@ export async function processImage(inputPath, outputPath, options) {
   }
 
   // 2. Resize
-  if (options.w || options.h) {
-    const width = options.w ? parseInt(options.w, 10) : null;
-    const height = options.h ? parseInt(options.h, 10) : null;
+  if (options.w !== undefined || options.h !== undefined) {
+    const width = options.w !== undefined ? options.w : null;
+    const height = options.h !== undefined ? options.h : null;
 
     // Default logic:
     // - If smart is true, force 'cover' with attention strategy.
@@ -102,27 +104,83 @@ export async function processImage(inputPath, outputPath, options) {
   }
 
   // 5. Format & Quality
+  // PNG quality posteriza (palette) - es con pérdida pero comprime de verdad
+  const getPngOptions = (q, isLossless) => {
+    if (isLossless || q >= 100) {
+      return { compressionLevel: 9, adaptiveFiltering: true, palette: false };
+    }
+    const clamped = Math.max(1, Math.min(100, q));
+    return {
+      quality: clamped,
+      palette: true,
+      compressionLevel: 9,
+      effort: 10,
+      dither: 1.0,
+    };
+  };
+
   if (options.format) {
-    const formatOptions = {};
-    if (options.quality) {
-      if (options.quality === "lossless") {
-        formatOptions.lossless = true;
+    const fmt = options.format.toLowerCase();
+    const isLossless = options.quality === "lossless";
+    const qRaw = parseInt(options.quality, 10);
+    const hasQuality = options.quality !== undefined && !isNaN(qRaw);
+
+    if (fmt === "png") {
+      if (isLossless || hasQuality) {
+        const q = hasQuality ? qRaw : 100;
+        instance = instance.png(getPngOptions(q, isLossless));
       } else {
-        const q = parseInt(options.quality, 10);
-        if (!isNaN(q)) formatOptions.quality = q;
+        instance = instance.png();
+      }
+    } else if (fmt === "jpg" || fmt === "jpeg") {
+      if (isLossless) {
+        instance = instance.jpeg({ quality: 100, mozjpeg: false });
+      } else if (hasQuality) {
+        instance = instance.jpeg({ quality: Math.max(1, Math.min(100, qRaw)), mozjpeg: qRaw < 90 });
+      } else {
+        instance = instance.jpeg();
+      }
+    } else {
+      // tiff/gif no soportan lossless:true via toFormat
+      if (fmt === "gif" && isLossless) {
+        instance = instance.gif();
+      } else {
+        const formatOptions = {};
+        if (isLossless) formatOptions.lossless = true;
+        else if (hasQuality) formatOptions.quality = Math.max(1, Math.min(100, qRaw));
+        instance = instance.toFormat(fmt, formatOptions);
       }
     }
-    instance = instance.toFormat(options.format, formatOptions);
   } else if (options.quality) {
-    const q = parseInt(options.quality, 10);
-    const qValue = !isNaN(q) ? q : 80; // Default if invalid
     const isLossless = options.quality === "lossless";
-
-    instance = instance
-      .jpeg({ quality: qValue, force: false })
-      .png({ lossless: isLossless, force: false })
-      .webp({ quality: qValue, lossless: isLossless, force: false })
-      .avif({ quality: qValue, lossless: isLossless, force: false });
+    const qRaw = parseInt(options.quality, 10);
+    const q = !isNaN(qRaw) ? Math.max(1, Math.min(100, qRaw)) : 80;
+    // Determinar formato real por extensión de salida (sin -f, se infiere del original)
+    const ext = path.extname(outputPath).toLowerCase();
+    if (ext === ".png") {
+      instance = instance.png(getPngOptions(q, isLossless));
+    } else if (ext === ".jpg" || ext === ".jpeg") {
+      if (isLossless) {
+        instance = instance.jpeg({ quality: 100, mozjpeg: false });
+      } else {
+        instance = instance.jpeg({ quality: q, mozjpeg: q < 90 });
+      }
+    } else if (ext === ".webp") {
+      if (isLossless) {
+        instance = instance.webp({ lossless: true });
+      } else {
+        instance = instance.webp({ quality: q, effort: 4 });
+      }
+    } else if (ext === ".avif") {
+      if (isLossless) {
+        instance = instance.avif({ lossless: true });
+      } else {
+        instance = instance.avif({ quality: q, effort: 4 });
+      }
+    } else if (ext === ".tiff") {
+      instance = instance.tiff({ quality: q });
+    }
+    // gif sin quality lossless -> gif es siempre lossless, no aplicar lossless flag
   }
 
   // 6. Execution

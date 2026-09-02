@@ -21,18 +21,30 @@ npx imodify-cli <argumentos>
 La sintaxis básica es:
 
 ```bash
-imodify [patrón] [opciones]
+imodify [ficheros|patrón] [opciones]
 ```
 
-Es obligatorio especificar un patrón o nombres de archivos. Si no se indican argumentos, se mostrará la ayuda.
+Puedes usar **O** una lista de ficheros **O** un patrón, no mezclados, siempre en el directorio actual (sin subdirectorios ni `**`):
 
-Para procesar todos los archivos del directorio actual, usa `*`. Recuerda usar comillas si el patrón contiene caracteres especiales o espacios (ej. `"*.jpg"`).
+```bash
+imodify img1.png img2.png --format webp   # lista
+imodify "*.png" --format webp             # patrón (con comillas en PowerShell)
+imodify "*" --w 800                       # todas las imágenes
+imodify "foto (1).jpg" "foto 2.png"       # con espacios/paréntesis, usa comillas
+```
+
+Si no indicas argumentos, equivale a `*` (todas). `*` incluye todas las imágenes soportadas del directorio actual (jpg, png, webp, avif, tiff, gif).
 
 ### Ejemplos
 
 **Optimizar todas las imágenes JPG en la carpeta actual y convertirlas a WebP:**
 ```bash
 imodify "*.jpg" --format webp
+```
+
+**Optimizar lista explícita de ficheros:**
+```bash
+imodify img1.png img2.png --format webp
 ```
 
 **Redimensionar imágenes a 800px de ancho manteniendo la proporción:**
@@ -108,18 +120,30 @@ npx imodify-cli <arguments>
 The basic syntax is:
 
 ```bash
-imodify [pattern] [options]
+imodify [files|pattern] [options]
 ```
 
-You must specify a file pattern or filenames. If no arguments are provided, the help menu is displayed.
+Use **either** a file list **OR** a pattern, not mixed, always in current directory (no subdirectories or `**`):
 
-To process all files in the current directory, use `*`. Remember to use quotes if the pattern contains special characters or spaces (e.g., `"*.jpg"`).
+```bash
+imodify img1.png img2.png --format webp   # list
+imodify "*.png" --format webp             # pattern (with quotes in PowerShell)
+imodify "*" --w 800                       # all images
+imodify "photo (1).jpg" "photo 2.png"     # with spaces/parens, use quotes
+```
+
+If no arguments are provided, it defaults to `*` (all). `*` includes all supported images in current directory (jpg, png, webp, avif, tiff, gif).
 
 ### Examples
 
 **Optimize all JPG images in the current folder and convert them to WebP:**
 ```bash
 imodify "*.jpg" --format webp
+```
+
+**Optimize explicit file list:**
+```bash
+imodify img1.png img2.png --format webp
 ```
 
 **Resize images to 800px width maintaining aspect ratio:**

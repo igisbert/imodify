@@ -3,7 +3,7 @@ import { env } from 'node:process';
 const strings = {
   en: {
     cli_desc: 'CLI for batch image optimization and manipulation',
-    arg_pattern: 'File pattern (e.g., "*.jpg" or just "*")',
+    arg_pattern: 'Files or pattern (e.g., "*.jpg" or img1.png img2.png) - list OR pattern, cwd only',
     opt_w: 'Width in pixels',
     opt_h: 'Height in pixels',
     opt_fit: 'Strategy: cover (crop), fill (stretch), inside (proportional), contain (bars)',
@@ -36,6 +36,8 @@ const strings = {
     msg_saved: 'Saved:',
     msg_reduction: 'reduction',
     msg_output: 'Output:',
+    msg_error_prefix: 'Error: ',
+    msg_help_hint: 'use --help for more information',
     msg_bar_label: 'Processing',
     msg_err_invalid_format: 'Invalid output format provided:',
     msg_err_supported_formats: 'Supported formats:',
@@ -45,11 +47,15 @@ const strings = {
     msg_initializing_ai: 'Initializing AI...',
     msg_initializing_ai_success: 'AI initialized successfully',
     msg_initializing_ai_fail: 'Failed to initialize AI',
-    msg_ai_not_initialized: 'AI not initialized'
+    msg_ai_not_initialized: 'AI not initialized',
+    msg_err_mixed_input: 'Mixed input not allowed: use either file list OR pattern, not both',
+    msg_mixed_hint: 'Example: imodify img1.png img2.png  OR  imodify "*.png"  (with quotes in PowerShell)',
+    msg_err_subdir: 'Subdirectories not supported: only current directory',
+    msg_subdir_hint: 'Use "*.png" or "file.jpg" in current directory, not "a/b/*.png" or "**"'
   },
   es: {
     cli_desc: 'CLI para optimización y manipulación de imágenes por lotes',
-    arg_pattern: 'Patrón de archivos (ej., "*.jpg" o simplemente "*")',
+    arg_pattern: 'Ficheros o patrón (ej., "*.jpg" o img1.png img2.png) - lista O patrón, solo dir actual',
     opt_w: 'Ancho en píxeles',
     opt_h: 'Alto en píxeles',
     opt_fit: 'Estrategia: cover (recorta), fill (estira), inside (proporcional), contain (barras)',
@@ -93,7 +99,11 @@ const strings = {
     msg_initializing_ai: 'Inicializando IA...',
     msg_initializing_ai_success: 'IA inicializada con éxito',
     msg_initializing_ai_fail: 'No se pudo inicializar la IA',
-    msg_ai_not_initialized: 'IA no inicializada'
+    msg_ai_not_initialized: 'IA no inicializada',
+    msg_err_mixed_input: 'Entrada mixta no permitida: usa lista O patrón, no ambos',
+    msg_mixed_hint: 'Ejemplo: imodify img1.png img2.png  O  imodify "*.png"  (con comillas en PowerShell)',
+    msg_err_subdir: 'Subdirectorios no soportados: solo directorio actual',
+    msg_subdir_hint: 'Usa "*.png" o "fichero.jpg" en el directorio actual, no "a/b/*.png" ni "**"'
   }
 };
 
