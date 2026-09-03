@@ -64,9 +64,11 @@ imodify "foto.jpg" --grayscale --brightness 1.2
 
 **Eliminar fondo con IA (manteniendo transparencia):**
 ```bash
-imodify "avatar.jpg" --removebg --format png
+imodify "avatar.jpg" --removebg --format png         # fast (BEN2) por defecto, rápido
+imodify "avatar.jpg" --removebg hq --format png      # hq (BiRefNet_dynamic) preciso, más pesado ~1.5GB descarga
+imodify "avatar.jpg" --rmbg hq --format png          # alias --rmbg
 ```
-*Si eliges un formato sin canal alfa (como JPG), el fondo eliminado se mostrará como un color sólido.*
+*Si eliges un formato sin canal alfa (como JPG), el fondo eliminado se mostrará como un color sólido. `fast` usa BEN2 (219MB), `hq` usa BiRefNet_dynamic (1.46GB, mejor en fotos complicadas).*
 
 ## Opciones Disponibles
 
@@ -90,7 +92,7 @@ imodify "avatar.jpg" --removebg --format png
 | `--rotate` | | Rotar imagen (0-359°, ej. 90, 180, 270; normalizado módulo 360, ej. 370->10) | `--rotate 90` |
 | `--flip` | | Voltear verticalmente | `--flip` |
 | `--flop` | | Voltear horizontalmente | `--flop` |
-| `--removebg` | `-b` | Elimina el fondo de la imagen usando IA. **Nota:** Requiere formatos como PNG o WebP para mantener la transparencia. | `--removebg` |
+| `--removebg [fast\|hq]` | `-b, --rmbg` | Elimina fondo con IA [fast\|hq]. fast=BEN2 rápido (defecto), hq=BiRefNet_dynamic calidad preciso pesado. Alias: ligero/pesado, light/heavy. Usa PNG/WebP para transparencia | `--removebg hq` |
 
 ## Licencia
 
@@ -164,9 +166,11 @@ imodify "photo.jpg" --grayscale --brightness 1.2
 
 **Remove background with AI (keeping transparency):**
 ```bash
-imodify "avatar.jpg" --removebg --format png
+imodify "avatar.jpg" --removebg --format png         # fast (BEN2) default, quick
+imodify "avatar.jpg" --removebg hq --format png      # hq (BiRefNet_dynamic) quality, heavier ~1.5GB download
+imodify "avatar.jpg" --rmbg hq --format png          # alias --rmbg
 ```
-*If you choose a format without an alpha channel (like JPG), the removed background will appear as a solid color.*
+*If you choose a format without an alpha channel (like JPG), the removed background will appear as a solid color. `fast` uses BEN2 (219MB), `hq` uses BiRefNet_dynamic (1.46GB, better on complex photos).*
 
 ## Available Options
 
@@ -190,7 +194,7 @@ imodify "avatar.jpg" --removebg --format png
 | `--rotate` | | Rotate image (0-359°, e.g., 90, 180, 270; normalized modulo 360, e.g., 370->10) | `--rotate 90` |
 | `--flip` | | Flip vertically | `--flip` |
 | `--flop` | | Flop horizontally | `--flop` |
-| `--removebg` | `-b` | Remove image background using AI. **Note:** Requires formats like PNG or WebP to maintain transparency. | `--removebg` |
+| `--removebg [fast\|hq]` | `-b, --rmbg` | Remove background AI [fast\|hq]. fast=BEN2 quick (default), hq=BiRefNet_dynamic quality heavy. Aliases: ligero/pesado, light/heavy. Use PNG/WebP for transparency | `--removebg hq` |
 
 ## License
 

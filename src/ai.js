@@ -2,106 +2,66 @@ import { pipeline } from "@huggingface/transformers";
 import sharp from "sharp";
 import { t } from "./i18n.js";
 
-const model = "onnx-community/BEN2-ONNX";
-
-const aiPipeline = {
-  segmentation: null,
+const MODELS = {
+  fast: "onnx-community/BEN2-ONNX",
+  hq: "onnx-community/BiRefNet_512x512-ONNX",
 };
 
-export async function initAI() {
-  if (!aiPipeline.segmentation) {
-    try {
-      aiPipeline.segmentation = await pipeline("background-removal", model, {
-        device: "webgpu",
-      });
-    } catch (error) {
-      aiPipeline.segmentation = await pipeline("background-removal", model, {
-        device: "cpu",
-      });
-    }
+const aiState = {
+  fast: null,
+  hq: null,
+};
+
+function normalizeMode(m) {
+  if (!m) return "fast";
+  const lower = String(m).toLowerCase().trim();
+  if (["fast", "ligero", "light", "min", "low", "eco"].includes(lower)) return "fast";
+  if (["hq", "pesado", "heavy", "max", "high", "pro"].includes(lower)) return "hq";
+  return lower;
+}
+
+export async function initAI(mode = "fast", { onProgress } = {}) {
+  const normalized = normalizeMode(mode);
+  const modelId = MODELS[normalized];
+  if (!modelId) throw new Error(`Invalid AI mode: ${mode} (allowed: fast, hq)`);
+  if (aiState[normalized]) return aiState[normalized];
+
+  const progressCb = onProgress
+    ? (data) => {
+        if (data.status === "progress" && data.progress !== undefined) {
+          onProgress(Math.round(data.progress));
+        } else if (data.status === "downloading" || data.status === "initiate") {
+          onProgress(data);
+        }
+      }
+    : undefined;
+
+  try {
+    const pipe = await pipeline("background-removal", modelId, {
+      device: "webgpu",
+      progress_callback: progressCb,
+    });
+    aiState[normalized] = pipe;
+    return pipe;
+  } catch (error) {
+    const pipe = await pipeline("background-removal", modelId, {
+      device: "cpu",
+      progress_callback: progressCb,
+    });
+    aiState[normalized] = pipe;
+    return pipe;
   }
 }
 
-export async function removeBackground(image) {
-  if (!aiPipeline.segmentation) {
-    throw new Error(t("msg_ai_not_initialized"));
-  }
-
-  const result = await aiPipeline.segmentation(image);
-
+export async function removeBackground(image, mode = "fast") {
+  const normalized = normalizeMode(mode);
+  const pipe = aiState[normalized];
+  if (!pipe) throw new Error(t("msg_ai_not_initialized"));
+  const result = await pipe(image);
   const data = result.data;
   const rawBuffer = data.buffer ? Buffer.from(data.buffer, data.byteOffset, data.byteLength) : Buffer.from(data);
   const buffer = await sharp(rawBuffer, {
-    raw: {
-      width: result.width,
-      height: result.height,
-      channels: 4,
-    },
-  })
-    .png()
-    .toBuffer();
-
+    raw: { width: result.width, height: result.height, channels: 4 },
+  }).png().toBuffer();
   return buffer;
 }
-
-/*  import { AutoModel, AutoProcessor, RawImage, env } from "@huggingface/transformers";
-import sharp from "sharp";
-import fs from "fs";
-
-env.logLevel = "error";
-
-const model = "briaai/RMBG-1.4";
-
-const aiPipeline = {
-    model: null,
-    processor: null
-}
-
-export async function initAI() {
-    if (!aiPipeline.model) {
-        aiPipeline.model = await AutoModel.from_pretrained(model, { device: "cpu" });
-        aiPipeline.processor = await AutoProcessor.from_pretrained(model);
-    }
-}
-
-export async function removeBackground(imagePath) {
-    if (!aiPipeline.model) {
-        throw new Error("AI not initialized");
-    }
-
-    const imageBuffer = fs.readFileSync(imagePath);
-
-    // Obtener metadata y buffer RGBA con sharp
-    const { data: rgbaData, info } = await sharp(imageBuffer)
-        .ensureAlpha()
-        .raw()
-        .toBuffer({ resolveWithObject: true });
-
-    // RawImage solo para el processor (necesita 3 canales para inferencia)
-    const { data: rgbData } = await sharp(imageBuffer)
-        .removeAlpha()
-        .raw()
-        .toBuffer({ resolveWithObject: true });
-
-    const rgbImage = new RawImage(new Uint8ClampedArray(rgbData.buffer), info.width, info.height, 3);
-
-    // Inferencia
-    const inputs = await aiPipeline.processor(rgbImage);
-    const { output } = await aiPipeline.model({ input: inputs.pixel_values });
-
-    const maskTensor = output[0][0].mul(255).to("uint8").unsqueeze(0);
-    const mask = await RawImage.fromTensor(maskTensor);
-    const resizedMask = await mask.resize(info.width, info.height);
-
-    // Aplicar máscara al buffer RGBA de sharp
-    const sourcePixels = new Uint8ClampedArray(rgbaData.buffer);
-    const maskPixels = resizedMask.data;
-
-    for (let i = 0; i < maskPixels.length; i++) {
-        sourcePixels[i * 4 + 3] = maskPixels[i];
-    }
-
-    return await sharp(Buffer.from(sourcePixels.buffer), {
-        raw: { width: info.width, height: info.height, channels: 4 }
-    }).png().toBuffer();
-} */

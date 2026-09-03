@@ -151,14 +151,29 @@ export async function optimize(options) {
     text: " " + t("msg_validating"),
   });
 
-  // Initialize AI if needed
+  // Initialize AI if needed (fast=BEN2 ligero, hq=BiRefNet_dynamic pesado)
   if (options.removebg) {
-    const aiSpinner = ora(" " + t("msg_initializing_ai")).start();
+    const mode = options.removebg;
+    const isHQ = mode === "hq";
+    const modelLabel = isHQ ? "hq (BiRefNet_dynamic)" : "fast (BEN2)";
+    const spinnerText = `${t("msg_initializing_ai")} ${chalk.dim(`[${modelLabel}]`)}`;
+    const aiSpinner = ora(" " + spinnerText).start();
+    let lastPct = -1;
     try {
-      await initAI();
+      await initAI(mode, {
+        onProgress: (pct) => {
+          if (typeof pct === "number" && pct !== lastPct) {
+            lastPct = pct;
+            aiSpinner.text = ` ${t("msg_initializing_ai")} ${chalk.dim(`[${modelLabel}]`)} ${pct}%`;
+          } else if (pct && pct.file) {
+            aiSpinner.text = ` ${t("msg_initializing_ai")} ${chalk.dim(`[${modelLabel}] ${pct.file}`)}`;
+          }
+        },
+      });
+      const device = isHQ ? "hq" : "fast";
       aiSpinner.stopAndPersist({
         symbol: chalk.green("✓"),
-        text: " " + t("msg_initializing_ai_success"),
+        text: ` ${t("msg_initializing_ai_success")} ${chalk.dim(`[${modelLabel}]`)}`,
       });
     } catch (error) {
       aiSpinner.fail(chalk.red(" " + t("msg_initializing_ai_fail")));

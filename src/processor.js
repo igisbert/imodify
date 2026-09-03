@@ -12,7 +12,7 @@ import { removeBackground } from "./ai.js";
 export async function processImage(inputPath, outputPath, options) {
   let instance;
   if (options.removebg) {
-    const aiBuffer = await removeBackground(inputPath);
+    const aiBuffer = await removeBackground(inputPath, options.removebg);
     instance = sharp(aiBuffer);
   } else {
     instance = sharp(inputPath);
@@ -107,7 +107,12 @@ export async function processImage(inputPath, outputPath, options) {
 
   // 5. Format & Quality
   // PNG quality posteriza (palette) - es con pérdida pero comprime de verdad
+  // Con removebg forzamos palette:false para preservar alpha continuo 0-255 (mejor calidad)
+  const isRemovebg = !!options.removebg;
   const getPngOptions = (q, isLossless) => {
+    if (isRemovebg) {
+      return { compressionLevel: 9, adaptiveFiltering: true, palette: false };
+    }
     if (isLossless || q >= 100) {
       return { compressionLevel: 9, adaptiveFiltering: true, palette: false };
     }
