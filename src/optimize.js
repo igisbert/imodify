@@ -234,14 +234,18 @@ export async function optimize(options) {
   for (let i = 0; i < validFiles.length; i++) {
     const fileObj = validFiles[i];
 
-    // Determine output name (sin pad por defecto, solo _X en colisión, vital para workflow web)
+    // Determine output name (dinámico: n=1 sin pad -> ola.jpg, resto pad=String(n).length)
     let outputName = path.basename(fileObj.path);
     if (options.rename) {
       const ext = options.format
         ? `.${options.format}`
         : path.extname(fileObj.path);
-      const padLen = Math.max(3, String(validFiles.length).length);
-      outputName = `${options.rename}${String(i + 1).padStart(padLen, "0")}${ext}`;
+      if (validFiles.length === 1) {
+        outputName = `${options.rename}${ext}`;
+      } else {
+        const padLen = String(validFiles.length).length;
+        outputName = `${options.rename}${String(i + 1).padStart(padLen, "0")}${ext}`;
+      }
     } else if (options.format) {
       const baseName = path.basename(fileObj.path, path.extname(fileObj.path));
       outputName = `${baseName}.${options.format}`;
