@@ -64,11 +64,11 @@ imodify "foto.jpg" --grayscale --brightness 1.2
 
 **Eliminar fondo con IA (manteniendo transparencia):**
 ```bash
-imodify "avatar.jpg" --removebg --format png         # fast (BEN2) por defecto, rápido
-imodify "avatar.jpg" --removebg hq --format png      # hq (BiRefNet_dynamic) preciso, más pesado ~1.5GB descarga
+imodify "avatar.jpg" --removebg --format png         # fast (BEN2) por defecto, rápido 219MB
+imodify "avatar.jpg" --removebg hq --format png      # hq (BiRefNet_512x512) preciso
 imodify "avatar.jpg" --rmbg hq --format png          # alias --rmbg
 ```
-*Si eliges un formato sin canal alfa (como JPG), el fondo eliminado se mostrará como un color sólido. `fast` usa BEN2 (219MB), `hq` usa BiRefNet_dynamic (1.46GB, mejor en fotos complicadas).*
+*Si eliges un formato sin canal alfa (como JPG), el fondo eliminado se mostrará como un color sólido.*
 
 ## Opciones Disponibles
 
@@ -78,8 +78,8 @@ imodify "avatar.jpg" --rmbg hq --format png          # alias --rmbg
 | `-h, --height, --alto` | | Alto en píxeles (entero >0) | `-h 600` |
 | `--fit` | | Estrategia (requiere ancho/alto): cover=rellena y recorta, contain=con barras, inside=proporcional sin deformar, fill=estira exacta. Por defecto: inside si un lado, fill si ambos. Prioridad: --smart > --fit | `--fit cover` |
 | `--smart` | | Recorte inteligente con atención (requiere -w/--width/--ancho y -h/--height/--alto). Fuerza cover+atención, anula --fit. Se ignora si falta ancho o alto | `--smart` |
-| `--format` | `-f` | Formato de salida (`jpg`, `png`, `webp`, `avif`) | `-f webp` |
-| `--quality` | `-q` | Calidad (1-100) | `-q 80` |
+| `--format` | `-f` | Formato de salida (`jpg`, `jpeg`, `png`, `webp`, `avif`, `tiff`, `gif`) | `-f webp` |
+| `--quality` | `-q` | Calidad (1-100 o `lossless`) | `-q 80` |
 | `-o, --output` | | Directorio salida (defecto ./imodify, "." para cwd, "a/b" crea subcarpetas, comillas si espacios) | `-o "."` |
 | `--clearexif` | | Eliminar metadatos EXIF | `--clearexif` |
 | `--rename` | | Patrón de renombrado para los archivos de salida | `--rename "foto"` |
@@ -92,7 +92,8 @@ imodify "avatar.jpg" --rmbg hq --format png          # alias --rmbg
 | `--rotate` | | Rotar imagen (0-359°, ej. 90, 180, 270; normalizado módulo 360, ej. 370->10) | `--rotate 90` |
 | `--flip` | | Voltear verticalmente | `--flip` |
 | `--flop` | | Voltear horizontalmente | `--flop` |
-| `--removebg [fast\|hq]` | `-b, --rmbg` | Elimina fondo con IA [fast\|hq]. fast=BEN2 rápido (defecto), hq=BiRefNet_dynamic calidad preciso pesado. Alias: ligero/pesado, light/heavy. Usa PNG/WebP para transparencia | `--removebg hq` |
+| `--removebg [fast\|hq]` | `-b, --rmbg` | Elimina fondo con IA [fast\|hq]. fast=BEN2 rápido (defecto 219MB), hq=BiRefNet_512x512 calidad preciso. Alias: ligero/pesado, light/heavy, min/max, low/high, eco/pro. Usa PNG/WebP para transparencia | `--removebg hq` |
+| `-H, --help` | | Muestra ayuda | `-H` |
 
 ## Licencia
 
@@ -166,11 +167,11 @@ imodify "photo.jpg" --grayscale --brightness 1.2
 
 **Remove background with AI (keeping transparency):**
 ```bash
-imodify "avatar.jpg" --removebg --format png         # fast (BEN2) default, quick
-imodify "avatar.jpg" --removebg hq --format png      # hq (BiRefNet_dynamic) quality, heavier ~1.5GB download
+imodify "avatar.jpg" --removebg --format png         # fast (BEN2) default, quick 219MB
+imodify "avatar.jpg" --removebg hq --format png      # hq (BiRefNet_512x512) quality
 imodify "avatar.jpg" --rmbg hq --format png          # alias --rmbg
 ```
-*If you choose a format without an alpha channel (like JPG), the removed background will appear as a solid color. `fast` uses BEN2 (219MB), `hq` uses BiRefNet_dynamic (1.46GB, better on complex photos).*
+*If you choose a format without an alpha channel (like JPG), the removed background will appear as a solid color.*
 
 ## Available Options
 
@@ -180,8 +181,8 @@ imodify "avatar.jpg" --rmbg hq --format png          # alias --rmbg
 | `-h, --height, --alto` | | Height in pixels (integer >0) | `-h 600` |
 | `--fit` | | Resize strategy (requires width/height): cover=fill & crop, contain=fit + bars, inside=proportional no stretch, fill=stretch exact. Defaults: inside if one side, fill if both. Priority: --smart > --fit | `--fit cover` |
 | `--smart` | | Smart crop attention (requires -w/--width/--ancho and -h/--height/--alto). Forces cover+attention, overrides --fit. Ignored if width or height missing | `--smart` |
-| `--format` | `-f` | Output format (`jpg`, `png`, `webp`, `avif`) | `-f webp` |
-| `--quality` | `-q` | Quality (1-100) | `-q 80` |
+| `--format` | `-f` | Output format (`jpg`, `jpeg`, `png`, `webp`, `avif`, `tiff`, `gif`) | `-f webp` |
+| `--quality` | `-q` | Quality (1-100 or `lossless`) | `-q 80` |
 | `-o, --output` | | Output directory (default ./imodify, "." for cwd, "a/b" creates subfolders, quotes if spaces) | `-o "."` |
 | `--clearexif` | | Remove EXIF metadata | `--clearexif` |
 | `--rename` | | Rename pattern for output files | `--rename "photo"` |
@@ -194,7 +195,8 @@ imodify "avatar.jpg" --rmbg hq --format png          # alias --rmbg
 | `--rotate` | | Rotate image (0-359°, e.g., 90, 180, 270; normalized modulo 360, e.g., 370->10) | `--rotate 90` |
 | `--flip` | | Flip vertically | `--flip` |
 | `--flop` | | Flop horizontally | `--flop` |
-| `--removebg [fast\|hq]` | `-b, --rmbg` | Remove background AI [fast\|hq]. fast=BEN2 quick (default), hq=BiRefNet_dynamic quality heavy. Aliases: ligero/pesado, light/heavy. Use PNG/WebP for transparency | `--removebg hq` |
+| `--removebg [fast\|hq]` | `-b, --rmbg` | Remove background AI [fast\|hq]. fast=BEN2 quick (default 219MB), hq=BiRefNet_512x512 quality. Aliases: ligero/pesado, light/heavy, min/max, low/high, eco/pro. Use PNG/WebP for transparency | `--removebg hq` |
+| `-H, --help` | | Display help | `-H` |
 
 ## License
 
