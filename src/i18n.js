@@ -22,7 +22,7 @@ const strings = {
     opt_flip: 'Flip vertically',
     opt_flop: 'Flop horizontally',
     opt_smart: 'Smart crop attention (requires -w/--width/--ancho and -h/--height/--alto). Forces cover+attention, overrides --fit. Ignored if width or height missing',
-    opt_removebg: 'Remove background using AI [fast|hq] (alias --rmbg, -b). fast=BEN2 (quick, default), hq=BiRefNet_512x512 (quality). Values: fast/hq + aliases ligero/pesado, light/heavy, min/max, low/high. Use PNG/WebP for transparency',
+    opt_removebg: 'Remove background using AI [fast|hq] (alias --rmbg, -b). fast=BEN2 (quick, default 219MB), hq=BiRefNet_512x512 (quality). Use PNG/WebP for transparency',
     
     msg_no_files_pattern: 'No files found matching the pattern.',
     msg_no_images_pattern: 'No images found matching the pattern.',
@@ -75,7 +75,7 @@ const strings = {
     opt_flip: 'Voltear verticalmente (flip)',
     opt_flop: 'Voltear horizontalmente (flop)',
     opt_smart: 'Recorte inteligente con atención (requiere -w/--width/--ancho y -h/--height/--alto). Fuerza cover+atención, anula --fit. Se ignora si falta ancho o alto',
-    opt_removebg: 'Elimina fondo con IA [fast|hq] (alias --rmbg, -b). fast=BEN2 (rápido, por defecto), hq=BiRefNet_512x512 (calidad). Valores: fast/hq + alias ligero/pesado, light/heavy, min/max. Usa PNG/WebP para transparencia',
+    opt_removebg: 'Elimina fondo con IA [fast|hq] (alias --rmbg, -b). fast=BEN2 (rápido, por defecto 219MB), hq=BiRefNet_512x512 (calidad). Usa PNG/WebP para transparencia',
     
     msg_no_files_pattern: 'No se encontraron archivos con ese patrón.',
     msg_no_images_pattern: 'No se encontraron imágenes con ese patrón.',

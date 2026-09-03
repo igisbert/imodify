@@ -69,24 +69,17 @@ export function getOptions() {
     .option("--flip", t("opt_flip"))
     .option("--flop", t("opt_flop"))
 
-    // AI (fast=BEN2 rápido ligero, hq=BiRefNet_dynamic preciso pesado, alias --rmbg)
+    // AI (fast=BEN2 rápido, hq=BiRefNet_512 preciso, alias --rmbg)
     .option("-b, --removebg [mode]", t("opt_removebg"), (v) => {
       if (v === true || v === undefined) return "fast";
       const lower = String(v).toLowerCase().trim();
-      if (["fast", "ligero", "light", "min", "low", "eco", "hq", "pesado", "heavy", "max", "high", "pro"].includes(lower)) {
-        // normalizar a fast/hq
-        if (["fast", "ligero", "light", "min", "low", "eco"].includes(lower)) return "fast";
-        return "hq";
-      }
-      throw new Error(`Invalid --removebg value: ${v} (allowed: fast, hq - aliases: ligero/pesado, light/heavy, min/max, low/high)`);
+      if (lower === "fast" || lower === "hq") return lower;
+      throw new Error(`Invalid --removebg value: ${v} (allowed: fast, hq)`);
     })
     .option("--rmbg [mode]", t("opt_removebg"), (v) => {
       if (v === true || v === undefined) return "fast";
       const lower = String(v).toLowerCase().trim();
-      if (["fast", "ligero", "light", "min", "low", "eco", "hq", "pesado", "heavy", "max", "high", "pro"].includes(lower)) {
-        if (["fast", "ligero", "light", "min", "low", "eco"].includes(lower)) return "fast";
-        return "hq";
-      }
+      if (lower === "fast" || lower === "hq") return lower;
       throw new Error(`Invalid --rmbg value: ${v} (allowed: fast, hq)`);
     })
     

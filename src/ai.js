@@ -15,8 +15,8 @@ const aiState = {
 function normalizeMode(m) {
   if (!m) return "fast";
   const lower = String(m).toLowerCase().trim();
-  if (["fast", "ligero", "light", "min", "low", "eco"].includes(lower)) return "fast";
-  if (["hq", "pesado", "heavy", "max", "high", "pro"].includes(lower)) return "hq";
+  if (lower === "fast") return "fast";
+  if (lower === "hq") return "hq";
   return lower;
 }
 
