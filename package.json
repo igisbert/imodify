@@ -4,7 +4,7 @@
   "description": "CLI for batch image optimization and manipulation using Sharp",
   "main": "src/optimize.js",
   "bin": {
-    "imodify": "./bin/imodify.js"
+    "imodify": "bin/imodify.js"
   },
   "type": "module",
   "scripts": {
@@ -24,7 +24,7 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "https://github.com/igisbert/imodify"
+    "url": "git+https://github.com/igisbert/imodify.git"
   },
   "homepage": "",
   "files": [
