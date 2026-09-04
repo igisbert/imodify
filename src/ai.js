@@ -60,8 +60,18 @@ export async function removeBackground(image, mode = "fast") {
   const result = await pipe(image);
   const data = result.data;
   const rawBuffer = data.buffer ? Buffer.from(data.buffer, data.byteOffset, data.byteLength) : Buffer.from(data);
-  const buffer = await sharp(rawBuffer, {
-    raw: { width: result.width, height: result.height, channels: 4 },
-  }).png().toBuffer();
+  let buffer;
+  try {
+    buffer = await sharp(rawBuffer, {
+      raw: { width: result.width, height: result.height, channels: 4 },
+    })
+      .toColourspace("srgb")
+      .png()
+      .toBuffer();
+  } catch {
+    buffer = await sharp(rawBuffer, {
+      raw: { width: result.width, height: result.height, channels: 4 },
+    }).png().toBuffer();
+  }
   return buffer;
 }

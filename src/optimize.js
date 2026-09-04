@@ -151,11 +151,11 @@ export async function optimize(options) {
     text: " " + t("msg_validating"),
   });
 
-  // Initialize AI if needed (fast=BEN2 ligero, hq=BiRefNet_dynamic pesado)
+  // Initialize AI if needed (fast=BEN2 rápido, hq=BiRefNet_512x512 preciso)
   if (options.removebg) {
     const mode = options.removebg;
-    const isHQ = mode === "hq";
-    const modelLabel = isHQ ? "hq (BiRefNet_dynamic)" : "fast (BEN2)";
+    const labels = { fast: "fast (BEN2)", hq: "hq (BiRefNet_512x512)" };
+    const modelLabel = labels[mode] || `${mode} (BEN2)`;
     const spinnerText = `${t("msg_initializing_ai")} ${chalk.dim(`[${modelLabel}]`)}`;
     const aiSpinner = ora(" " + spinnerText).start();
     let lastPct = -1;

@@ -13,7 +13,12 @@ export async function processImage(inputPath, outputPath, options) {
   let instance;
   if (options.removebg) {
     const aiBuffer = await removeBackground(inputPath, options.removebg);
-    instance = sharp(aiBuffer);
+    // Blindaje colourspace para aiBuffer (raw RGBA sin perfil) - evita colourspace: parameter space not set en global con doble libvips
+    try {
+      instance = sharp(aiBuffer).toColourspace("srgb");
+    } catch {
+      instance = sharp(aiBuffer);
+    }
   } else {
     instance = sharp(inputPath);
 }
