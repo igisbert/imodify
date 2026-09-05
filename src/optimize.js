@@ -170,7 +170,6 @@ export async function optimize(options) {
           }
         },
       });
-      const device = isHQ ? "hq" : "fast";
       aiSpinner.stopAndPersist({
         symbol: chalk.green("✓"),
         text: ` ${t("msg_initializing_ai_success")} ${chalk.dim(`[${modelLabel}]`)}`,

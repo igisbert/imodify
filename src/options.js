@@ -69,7 +69,7 @@ export function getOptions() {
     .option("--flip", t("opt_flip"))
     .option("--flop", t("opt_flop"))
 
-    // AI (fast=BEN2 rápido, hq=BiRefNet_512 preciso, alias --rmbg)
+    // AI (fast=BEN2 rápido, hq=BiRefNet_512 preciso)
     .option("-b, --removebg [mode]", t("opt_removebg"), (v) => {
       if (v === true || v === undefined) return "fast";
       const lower = String(v).toLowerCase().trim();
@@ -98,27 +98,21 @@ export function getOptions() {
   program.parse();
 
   const rawOpts = program.opts();
-  // Normalizar width/height primaria (width/height) + alias ancho/alto -> w/h legacy eliminado
+  // Normalizar width/height primaria (width/height) + alias ancho/alto
   const width = rawOpts.width ?? rawOpts.ancho;
   const height = rawOpts.height ?? rawOpts.alto;
-  // Normalizar removebg/rmbg -> fast/hq (BEN2 / BiRefNet_dynamic), default fast
+  // Normalizar removebg/rmbg -> fast/hq, default fast
   let removebgMode = rawOpts.removebg ?? rawOpts.rmbg;
   if (removebgMode === true) removebgMode = "fast";
-  // Si se pasó como boolean true sin valor, ya es fast; si es string fast/hq ya normalizado arriba
   const options = { ...rawOpts };
   if (width !== undefined) options.width = width;
   if (height !== undefined) options.height = height;
   // compat: alias w/h por si processor antiguo lee w/h (ya migrado a width/height)
   if (width !== undefined) options.w = width;
   if (height !== undefined) options.h = height;
-  // Unificar rmbg -> removebg
   if (removebgMode !== undefined) {
     options.removebg = removebgMode;
     delete options.rmbg;
-  }
-  // Si solo se pasó --rmbg sin --removebg, ya está en removebgMode
-  if (rawOpts.rmbg !== undefined && rawOpts.removebg === undefined) {
-    options.removebg = removebgMode;
   }
 
   // Validar --output: no -> imodify, "." -> cwd, "string" -> carpeta (crear si no existe)

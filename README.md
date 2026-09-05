@@ -92,7 +92,7 @@ imodify "avatar.jpg" --rmbg hq --format png          # alias --rmbg
 | `--rotate` | | Rotar imagen (0-359°, ej. 90, 180, 270; normalizado módulo 360, ej. 370->10) | `--rotate 90` |
 | `--flip` | | Voltear verticalmente | `--flip` |
 | `--flop` | | Voltear horizontalmente | `--flop` |
-| `--removebg [fast\|hq]` | `-b, --rmbg` | Elimina fondo con IA [fast\|hq]. fast=BEN2 rápido (defecto 219MB), hq=BiRefNet_512x512 calidad preciso. Alias: ligero/pesado, light/heavy, min/max, low/high, eco/pro. Usa PNG/WebP para transparencia | `--removebg hq` |
+| `--removebg [fast\|hq]` | `-b, --rmbg` | Elimina fondo con IA [fast\|hq]. fast=BEN2 rápido (defecto 219MB), hq=BiRefNet_512x512 calidad preciso. Usa PNG/WebP para transparencia | `--removebg hq` |
 | `-H, --help` | | Muestra ayuda | `-H` |
 
 ## Licencia
@@ -195,7 +195,7 @@ imodify "avatar.jpg" --rmbg hq --format png          # alias --rmbg
 | `--rotate` | | Rotate image (0-359°, e.g., 90, 180, 270; normalized modulo 360, e.g., 370->10) | `--rotate 90` |
 | `--flip` | | Flip vertically | `--flip` |
 | `--flop` | | Flop horizontally | `--flop` |
-| `--removebg [fast\|hq]` | `-b, --rmbg` | Remove background AI [fast\|hq]. fast=BEN2 quick (default 219MB), hq=BiRefNet_512x512 quality. Aliases: ligero/pesado, light/heavy, min/max, low/high, eco/pro. Use PNG/WebP for transparency | `--removebg hq` |
+| `--removebg [fast\|hq]` | `-b, --rmbg` | Remove background AI [fast\|hq]. fast=BEN2 quick (default 219MB), hq=BiRefNet_512x512 quality. Use PNG/WebP for transparency | `--removebg hq` |
 | `-H, --help` | | Display help | `-H` |
 
 ## License
